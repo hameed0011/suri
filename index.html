@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pastel Letter With Falling Symbols</title>
+
+<style>
+    body {
+        margin: 0;
+        background: #faf3e7;
+        font-family: "Georgia", serif;
+        overflow: hidden;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+
+    /* TOPMOST Falling Symbols Layer */
+    #symbols-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 999999999;
+    }
+
+    .symbol {
+        position: absolute;
+        top: -50px;
+        animation: fall linear forwards;
+        opacity: 0.8;
+        user-select: none;
+    }
+
+    @keyframes fall {
+        0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(110vh) rotate(360deg); opacity: 0.4; }
+    }
+
+    /* Envelope */
+    .envelope {
+        width: 96vw;
+        height: 96vh;
+        background: linear-gradient(135deg, #f7d7b5, #e6c7b8);
+        border-radius: 10px;
+        position: relative;
+        box-shadow: 0px 8px 18px rgba(0,0,0,0.18);
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: transform .45s ease;
+        border: 2px solid rgba(0,0,0,0.15);
+        z-index: 10;
+    }
+
+    .envelope:hover { transform: scale(1.015); }
+
+    .envelope-text {
+        font-size: 22px;
+        color: #4d3f36;
+        opacity: 0.8;
+        letter-spacing: 1px;
+    }
+
+    /* Letter */
+    .letter {
+        width: 0;
+        height: 0;
+        opacity: 0;
+        background: #fffdf6;
+        position: absolute;
+        border-radius: 8px;
+        padding: 0;
+        box-shadow: 0px 10px 25px rgba(0,0,0,0.25);
+        border: 1.5px solid #d8c9aa;
+        overflow-y: auto;
+        transition: all .55s cubic-bezier(0.25, 0.1, 0.25, 1);
+        z-index: 20;
+    }
+
+    .letter.open {
+        width: 93vw;
+        height: 93vh;
+        padding: 26px;
+        opacity: 1;
+    }
+
+    h2 {
+        margin-top: 0;
+        font-size: 28px;
+        color: #3e362f;
+    }
+
+    p {
+        font-size: 18px;
+        color: #4b433c;
+        line-height: 1.7;
+        margin: 16px 0;
+    }
+
+    .hint {
+        margin-top: 20px;
+        text-align: center;
+        opacity: 0.5;
+        font-size: 14px;
+    }
+
+    .letter::-webkit-scrollbar { width: 6px; }
+    .letter::-webkit-scrollbar-thumb {
+        background: #cbbca2;
+        border-radius: 4px;
+    }
+</style>
+</head>
+
+<body>
+
+<!-- TOPMOST SYMBOL LAYER -->
+<div id="symbols-container"></div>
+
+<!-- Envelope -->
+<div class="envelope" id="envelope">
+    <div class="envelope-text">Tap to Open</div>
+</div>
+
+<!-- Letter -->
+<div class="letter" id="letter">
+    <h2>Dear You,</h2>
+
+    <p>
+        Replace this text with your real letter.  
+        You can write paragraphs, stories, feelings--everything.
+    </p>
+
+    <p>
+        Now the falling symbols are ALWAYS visible,
+        giving a smooth magical aesthetic all over the screen.
+    </p>
+
+    <p>
+        They stay above the envelope AND the letter.
+    </p>
+
+    <div class="hint">Tap anywhere to close</div>
+</div>
+
+<audio id="music" loop>
+    <source src="ptani.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+    /* Open/Close Letter */
+    const envelope = document.getElementById("envelope");
+    const letter = document.getElementById("letter");
+    const music = document.getElementById("music");
+    let isOpen = false;
+
+    envelope.addEventListener("click", () => {
+        if (!isOpen) {
+            letter.classList.add("open");
+            envelope.style.display = "none";
+            music.play();
+            isOpen = true;
+        }
+    });
+
+    letter.addEventListener("click", () => {
+        if (isOpen) {
+            letter.classList.remove("open");
+            setTimeout(() => envelope.style.display = "flex", 500);
+            music.pause();
+            music.currentTime = 0;
+            isOpen = false;
+        }
+    });
+
+    /* Falling Symbols (TOP LAYER) */
+    const symbolsContainer = document.getElementById("symbols-container");
+    const symbols = ["✦", "♡", "❀", "❁", "✧"];
+    const colors = ["#e6a4ff", "#ffb8c6", "#ffd38a", "#b8e3ff", "#d3c6ff"];
+
+    function createSymbol() {
+        const symbol = document.createElement("div");
+        symbol.classList.add("symbol");
+
+        symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+
+        const size = Math.random() * 28 + 12;
+        symbol.style.fontSize = size + "px";
+
+        symbol.style.left = Math.random() * 100 + "vw";
+
+        symbol.style.color = colors[Math.floor(Math.random() * colors.length)];
+
+        const duration = Math.random() * 4 + 4;
+        symbol.style.animationDuration = duration + "s";
+
+        symbolsContainer.appendChild(symbol);
+
+        setTimeout(() => symbol.remove(), duration * 1000);
+    }
+
+    setInterval(createSymbol, 350);
+</script>
+
+</body>
+</html>
